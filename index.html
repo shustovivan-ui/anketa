@@ -173,19 +173,25 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   </div>
   <form id="form" novalidate></form>
   <div class="submit" id="submit-row">
-    <button class="btn" id="submit" type="button">Готово, собрать ответы</button>
+    <button class="btn" id="submit" type="button">Отправить ответы</button>
     <div class="status" id="status" role="status" aria-live="polite"></div>
   </div>
 </section>
 
 <section id="view-done" hidden>
   <div class="done">
-    <h2>Спасибо! Осталось отправить ответы</h2>
-    <p>Скачай файл с ответами и отправь его Ивану в рабочий мессенджер. Если файл не скачивается, скопируй ответы текстом и вставь в сообщение.</p>
+    <h2>Спасибо, ответы отправлены</h2>
+    <p>Соберём общую картину по команде и обсудим выводы вместе.</p>
+    <div><button class="btn ghost" id="edit" type="button">Изменить ответы</button></div>
+  </div>
+</section>
+<section id="view-fail" hidden>
+  <div class="done">
+    <h2>Не получилось отправить</h2>
+    <p>Похоже, рабочая сеть не пускает отправку. Скопируй ответы и пришли их Ивану в мессенджер, или попробуй ещё раз позже.</p>
     <div class="actions">
-      <button class="btn" id="dl" type="button">Скачать файл</button>
-      <button class="btn ghost" id="copy" type="button">Скопировать текстом</button>
-      <button class="btn ghost" id="edit" type="button">Изменить ответы</button>
+      <button class="btn" id="retry" type="button">Попробовать ещё раз</button>
+      <button class="btn ghost" id="copy" type="button">Скопировать ответы</button>
     </div>
     <div class="status" id="done-status" role="status" aria-live="polite"></div>
     <textarea id="out" readonly aria-label="Ответы текстом"></textarea>
@@ -366,17 +372,29 @@ function finish(){
     status(`Осталось ответить на ${missing.length} ${plural(missing.length,"вопрос","вопроса","вопросов")}`+(sp?". Проверь, что этапы в сумме дают 100%.":"."),true);
     return;
   }
-  status("");$("#out").value=asText();
-  $("#view-form").hidden=true;$("#view-done").hidden=false;$("#progress").hidden=true;window.scrollTo({top:0});
+  send();
+}
+const TG="8531807347:AAE7q7Qyo4wBA5tafISE4ZUvGcdPKnWig2s",CHAT=8099;
+function show(id){["view-form","view-done","view-fail"].forEach(v=>$("#"+v).hidden=v!==id);$("#progress").hidden=id!=="view-form";window.scrollTo({top:0})}
+async function tg(method,body){const r=await fetch(`https://api.telegram.org/bot${TG}/${method}`,{method:"POST",body});const j=await r.json();if(!j.ok)throw new Error(j.description);return j}
+async function send(){
+  const btn=$("#submit");btn.disabled=true;status("Отправляю…");
+  const full=asText(),readable=full.split("\n---DATA---")[0];
+  try{
+    const parts=[];for(let i=0;i<readable.length;i+=3900)parts.push(readable.slice(i,i+3900));
+    for(const p of parts){const f=new FormData();f.append("chat_id",CHAT);f.append("text",p);await tg("sendMessage",f)}
+    const f=new FormData();f.append("chat_id",CHAT);
+    f.append("document",new Blob([JSON.stringify(answers,null,1)],{type:"application/json"}),fileName().replace(".txt",".json"));
+    await tg("sendDocument",f);
+    status("");show("view-done");
+    try{localStorage.removeItem(DRAFT_KEY)}catch(e){}
+  }catch(e){
+    status("");$("#out").value=full;show("view-fail");
+  }finally{btn.disabled=false}
 }
 $("#submit").addEventListener("click",finish);
-$("#edit").addEventListener("click",()=>{$("#view-done").hidden=true;$("#view-form").hidden=false;$("#progress").hidden=false});
-$("#dl").addEventListener("click",()=>{
-  const blob=new Blob([$("#out").value],{type:"text/plain;charset=utf-8"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fileName();document.body.append(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
-  $("#done-status").textContent="Файл "+fileName()+" скачан. Отправь его Ивану.";
-});
+$("#edit").addEventListener("click",()=>show("view-form"));
+$("#retry").addEventListener("click",send);
 $("#copy").addEventListener("click",async()=>{
   const t=$("#out");
   try{await navigator.clipboard.writeText(t.value);$("#done-status").textContent="Скопировано. Вставь в сообщение Ивану."}
