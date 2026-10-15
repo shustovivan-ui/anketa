@@ -111,8 +111,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .gate-card{width:100%;max-width:400px;display:grid;gap:14px;border:1px solid var(--line);border-radius:var(--r);padding:32px}
 .gate-card h1{font-size:28px;font-weight:500;color:var(--ink)}
 .gate-card p{margin:0;color:var(--muted)}
-input[type=password]{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid transparent;border-radius:var(--r-field);padding:12px 14px}
-input[type=password]:focus{background:var(--surface);border-color:var(--accent);outline:none}
+#gate-pass{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid transparent;border-radius:var(--r-field);padding:12px 14px}
+#gate-pass:focus{background:var(--surface);border-color:var(--accent);outline:none}
 /* результаты */
 .res{display:grid;gap:16px;padding-top:32px}
 .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
@@ -157,7 +157,7 @@ input[type=password]:focus{background:var(--surface);border-color:var(--accent);
     <div class="eyebrow">Дизайн-команда</div>
     <h1>Анкета дизайнера</h1>
     <p>Введи пароль, который пришёл вместе со ссылкой.</p>
-    <input type="password" id="gate-pass" aria-label="Пароль" placeholder="Пароль">
+    <input type="text" id="gate-pass" aria-label="Пароль" placeholder="Пароль" autocomplete="off" autocapitalize="off" spellcheck="false">
     <div class="status err" id="gate-err" role="alert"></div>
     <button class="btn" type="submit">Открыть анкету</button>
   </form>
@@ -389,7 +389,8 @@ function unlock(){$("#gate").hidden=true;$("#app").hidden=false;$("#top").hidden
 try{if(sessionStorage.getItem("anketa-ok")==="1")unlock()}catch(e){}
 $("#gate-form").addEventListener("submit",async e=>{
   e.preventDefault();
-  const v=$("#gate-pass").value.trim();
+  const RU="йцукенгшщзхъфывапролджэячсмитьбю",EN="qwertyuiop[]asdfghjkl;'zxcvbnm,.";
+  const v=[...$("#gate-pass").value.trim().toLowerCase()].map(c=>{const i=RU.indexOf(c);return i<0?c:EN[i]}).join("");
   if(await sha(v)===PASS_HASH){try{sessionStorage.setItem("anketa-ok","1")}catch(_){}unlock()}
   else{$("#gate-err").textContent="Пароль не подошёл. Проверь раскладку и попробуй ещё раз.";}
 });
