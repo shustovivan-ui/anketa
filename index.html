@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Анкета дизайнера</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Одна колонка формы, узкая мера текста; вопрос — карточка, блоки разделены подписью этапа */
+:root{
+  /* AirKit 3.0, светлая тема */
+  --bg:#FFFFFF; --surface:#FFFFFF; --field:#F0F1F4; --ink:#202028; --text:#363744; --muted:#8B8DA5; --line:#E2E4EA;
+  --accent:#007BFC; --accent-soft:rgba(0,123,252,.08); --accent-ink:#FFFFFF;
+  --warn:#FF2F13; --warn-soft:rgba(255,47,19,.08); --ok:#17A448;
+  --seg1:#007BFC; --seg2:#66B0FD; --seg3:#17A448; --seg4:#FFC300; --seg5:#FF8A00; --seg6:#8B8DA5;
+  --f-body:"CoFo Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --f-mono:"CoFo Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --r:16px; --r-field:12px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:720px;margin:0 auto}
+h1,h2,h3{text-wrap:balance;margin:0}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));
+  padding:10px max(16px,env(safe-area-inset-left,0px))}
+.topin{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:16px;justify-content:space-between}
+.tabs{display:flex;gap:4px}
+.tab{font:inherit;font-size:14px;font-weight:500;border:0;background:transparent;color:var(--muted);padding:6px 12px;border-radius:8px;cursor:pointer}
+
+.progress{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);min-width:0}
+.bar{width:120px;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+
+.intro{padding:40px 0 24px;display:grid;gap:14px}
+.eyebrow{font-size:14px;font-weight:500;color:var(--accent)}
+.intro h1{font-size:clamp(28px,5vw,40px);line-height:1.15;font-weight:500;letter-spacing:-.01em;color:var(--ink)}
+.intro p{margin:0;color:var(--muted);max-width:60ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:500}
+
+.notice{border:1px solid var(--warn);background:var(--warn-soft);color:var(--ink);padding:12px 14px;border-radius:var(--r);font-size:14px}
+
+.block{display:grid;gap:12px;margin-top:36px}
+.block-head{display:flex;align-items:baseline;gap:12px;padding:0 4px}
+.block-head .stage{font-size:14px;color:var(--muted)}
+.block-head h2{font-size:22px;font-weight:500;color:var(--ink)}
+.block-note{margin:0;padding:16px 20px;border-radius:var(--r);background:var(--accent-soft);font-size:15px;color:var(--text)}
+.block-note b{font-weight:500;color:var(--ink)}
+
+.q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;display:grid;gap:12px;scroll-margin-top:80px}
+.q.invalid{border-color:var(--warn);box-shadow:0 0 0 3px var(--warn-soft)}
+.qh{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline}
+.qn{font-size:14px;font-weight:500;color:var(--accent);min-width:2ch;font-variant-numeric:tabular-nums}
+.qt{font-size:18px;font-weight:500;line-height:1.35;min-width:0;color:var(--ink)}
+.qn:empty{display:none}
+.qh:has(.qn:empty){grid-template-columns:1fr}
+.qh:has(.qn:empty) .qhint{grid-column:1}
+.qhint{grid-column:2;font-size:14px;color:var(--muted);margin:0}
+.opt{font-size:13px;color:var(--muted);font-weight:400}
+.sub{display:grid;gap:8px}
+.sub>label{font-size:14px;color:var(--muted)}
+
+input[type=text],input[type=number],textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);
+  border:1px solid transparent;border-radius:var(--r-field);padding:12px 14px;transition:border-color .15s,background .15s}
+input[type=text]:hover,input[type=number]:hover,textarea:hover{border-color:var(--line)}
+input[type=text]:focus,input[type=number]:focus,textarea:focus{background:var(--surface);border-color:var(--accent);outline:none}
+::placeholder{color:var(--muted)}
+textarea{min-height:88px;resize:vertical;line-height:1.45}
+input:focus-visible,textarea:focus-visible,.chip:focus-within,.tab:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;display:inline-flex}
+.chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.chip span{display:inline-block;padding:9px 16px;border-radius:999px;border:1px solid transparent;font-size:15px;background:var(--field);color:var(--ink);cursor:pointer;user-select:none;transition:background .15s,border-color .15s}
+.chip input:checked+span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip:hover span{border-color:var(--accent)}
+
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pair .sub input{font-family:var(--f-mono)}
+
+.split{display:grid;gap:10px}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,240px) 46px;gap:12px;align-items:center}
+.srow .lbl{display:flex;align-items:center;gap:8px;font-size:14px;min-width:0}
+.dot{width:10px;height:10px;border-radius:3px;flex:none}
+.srow output{font-size:15px;font-weight:500;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--line)}
+.stack i{display:block;height:100%}
+.total{display:flex;justify-content:space-between;font-size:14px}
+.total .v{font-family:var(--f-mono)}
+.total.bad .v{color:var(--warn)} .total.good .v{color:var(--ok)}
+
+.submit{margin-top:32px;display:grid;gap:12px;justify-items:start}
+.btn{font:inherit;font-weight:500;font-size:16px;border:0;border-radius:var(--r-field);padding:14px 24px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:var(--accent-soft);color:var(--accent)}
+.btn:hover{filter:brightness(.95)}
+.status{font-size:14px;color:var(--muted)}
+.status.err{color:var(--warn)}
+
+.done{margin-top:40px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:28px;display:grid;gap:12px}
+.done h2{font-size:24px;font-weight:500;color:var(--ink)}
+.done p{margin:0;color:var(--muted)}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+#out{min-height:220px;font-family:var(--f-mono);font-size:13px}
+.gate{min-height:100vh;display:grid;place-items:center;padding-block:40px}
+.gate-card{width:100%;max-width:400px;display:grid;gap:14px;border:1px solid var(--line);border-radius:var(--r);padding:32px}
+.gate-card h1{font-size:28px;font-weight:500;color:var(--ink)}
+.gate-card p{margin:0;color:var(--muted)}
+input[type=password]{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid transparent;border-radius:var(--r-field);padding:12px 14px}
+input[type=password]:focus{background:var(--surface);border-color:var(--accent);outline:none}
+/* результаты */
+.res{display:grid;gap:16px;padding-top:32px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:4px}
+.kpi .n{font-family:var(--f-mono);font-size:26px}
+.kpi .l{font-size:13px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:12px;min-width:0}
+.card h3{font-size:16px;font-weight:600}
+.card .hint{font-size:13px;color:var(--muted);margin:-6px 0 0}
+.hb{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2fr) 32px;gap:10px;align-items:center;font-size:14px}
+.hb .track{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.hb .track i{display:block;height:100%;background:var(--accent)}
+.hb .c{font-family:var(--f-mono);text-align:right;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.prow{display:grid;grid-template-columns:minmax(0,160px) minmax(0,1fr);gap:12px;align-items:center;font-size:14px}
+.prow .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.answers{display:grid;gap:10px}
+.ans{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:4px}
+.ans:first-child{border-top:0;padding-top:0}
+.ans .who{font-size:13px;color:var(--muted)}
+.ans .txt{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:28px;color:var(--muted);text-align:center}
+@media (max-width:560px){
+  .pair{grid-template-columns:1fr}
+  .srow{grid-template-columns:minmax(0,1fr) 46px}
+  .srow input[type=range]{grid-column:1/-1;grid-row:2}
+  .kpis{grid-template-columns:1fr 1fr}
+  .bar{width:64px}
+  .prow{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head><body>
+<header class="top" id="top" hidden><div class="topin">
+  <div class="progress" id="progress"><span class="mono" id="prog-txt">0 из 14</span><div class="bar"><i id="prog-bar"></i></div></div>
+</div></header>
+
+<div id="gate" class="gate">
+  <form class="gate-card" id="gate-form" autocomplete="off">
+    <div class="eyebrow">Дизайн-команда</div>
+    <h1>Анкета дизайнера</h1>
+    <p>Введи пароль, который пришёл вместе со ссылкой.</p>
+    <input type="password" id="gate-pass" aria-label="Пароль" placeholder="Пароль">
+    <div class="status err" id="gate-err" role="alert"></div>
+    <button class="btn" type="submit">Открыть анкету</button>
+  </form>
+</div>
+<main class="wrap" id="app" hidden>
+<section id="view-form">
+  <div class="intro">
+    <div class="eyebrow">Дизайн-команда · октябрь 2026</div>
+    <h1>Где теряется время в нашей работе</h1>
+    <p>Хотим найти реальные боли и вместе решить, что поменять в процессе: где помогут шаблоны, где ИИ, где договорённости с продуктом. Это не оценка твоей работы. Отвечай про то, как было на самом деле, а не как должно быть.</p>
+    <div class="meta"><span><b>14</b> вопросов</span><span><b>~15</b> минут</span><span>Работает без интернета</span><span>Черновик сохраняется в этом браузере</span></div>
+  </div>
+  <form id="form" novalidate></form>
+  <div class="submit" id="submit-row">
+    <button class="btn" id="submit" type="button">Готово, собрать ответы</button>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="view-done" hidden>
+  <div class="done">
+    <h2>Спасибо! Осталось отправить ответы</h2>
+    <p>Скачай файл с ответами и отправь его Ивану в рабочий мессенджер. Если файл не скачивается, скопируй ответы текстом и вставь в сообщение.</p>
+    <div class="actions">
+      <button class="btn" id="dl" type="button">Скачать файл</button>
+      <button class="btn ghost" id="copy" type="button">Скопировать текстом</button>
+      <button class="btn ghost" id="edit" type="button">Изменить ответы</button>
+    </div>
+    <div class="status" id="done-status" role="status" aria-live="polite"></div>
+    <textarea id="out" readonly aria-label="Ответы текстом"></textarea>
+  </div>
+</section>
+
+</main>
+
+<script>
+const STREAMS=["Витрина","Внутренние продукты","Сделка","ЛК"];
+const SPLIT=[
+  ["immersion","Погружение и вводные","--seg1"],
+  ["proto","Прототип и сценарии","--seg2"],
+  ["design","Дизайн макетов","--seg3"],
+  ["review","Согласования и правки","--seg4"],
+  ["handoff","Подготовка к передаче","--seg5"],
+  ["devq","Вопросы разработки после передачи","--seg6"]
+];
+const BLOCKS=[
+ {id:"me",stage:"Контекст",title:"О тебе",qs:[
+   {id:"name",type:"text",title:"Имя и фамилия",num:false},
+   {id:"stream",type:"single",title:"Стрим",options:STREAMS,num:false},
+   {id:"tenure",type:"single",title:"Сколько ты в компании",options:["До 6 месяцев","6–12 месяцев","1–2 года","Больше 2 лет"],num:false}
+ ]},
+ {id:"task",stage:"Блок 1",title:"Последняя задача",
+  note:"Вспомни последнюю <b>завершённую задачу среднего или крупного объёма</b>: сценарий из нескольких экранов, который прошёл погружение, дизайн, согласования и передачу в разработку. Например, новый шаг бронирования на витрине, раздел документов в ЛК или карточка заявки в панели менеджера. Мелкие правки на один экран не подходят. Вопросы 1–5 про эту задачу.",
+  qs:[
+   {id:"task",type:"textarea",title:"Что это была за задача?",hint:"1–2 предложения: что делал и для кого."},
+   {id:"time",type:"pair",title:"Сколько рабочих дней ты закладывал и сколько ушло на самом деле?",fields:[["estimate","Оценка, дней"],["actual","Факт, дней"]]},
+   {id:"split",type:"split",title:"Как распределилось время по этапам?",hint:"Прикинь примерно, в сумме должно выйти 100%."},
+   {id:"rework",type:"textarea",title:"Что пришлось переделывать? Кто вернул и почему?",hint:"Если ничего, так и напиши."},
+   {id:"faster",type:"textarea",title:"Какой этап можно было пройти вдвое быстрее и что для этого было нужно?"}
+ ]},
+ {id:"input",stage:"Блок 2",title:"Вход задачи",qs:[
+   {id:"missing",type:"multi",title:"Чего обычно не хватает в постановке на старте?",hint:"Про задачи в целом, а не только последнюю.",options:["Цели и метрики успеха","Ограничений разработки","Данных и аналитики","Сценариев и корнер-кейсов","Понятных сроков","Понимания, кто принимает решение","Обычно всего хватает"]}
+ ]},
+ {id:"handoff",stage:"Блок 3",title:"Чек-лист и передача в разработку",qs:[
+   {id:"checklist",type:"single",title:"Как ты пользуешься чек-листом из шаблона задачи?",hint:"Подсказки «Погружение», «Дизайн» и другие на страницах шаблона.",options:["Прохожу по нему всегда","Заглядываю иногда","Не открываю","Не знал, что он есть"],
+    extra:{id:"checklist_notes",label:"Что в нём устарело, лишнее или чего не хватает?",optional:true}},
+   {id:"states",type:"multi",title:"Что ты прорабатываешь в макетах всегда, без напоминаний?",hint:"Отметь только то, что делаешь в каждой задаче.",options:["Пустые состояния","Ошибки и отказы","Загрузка и скелетоны","Длинные и короткие тексты","Нет данных или фото","Права и роли","Адаптив и брейкпоинты","Все состояния компонентов","Граничные значения: цены, сроки, количество","Тексты ошибок и подсказок","Доступность"]},
+   {id:"devq",type:"single",title:"Сколько вопросов задала разработка после твоей последней передачи?",options:["Ни одного","1–3","4–10","Больше 10","Не помню"],
+    extra:{id:"devq_avoidable",label:"Какие из них можно было закрыть ещё в макете?",optional:true}}
+ ]},
+ {id:"ai",stage:"Блок 4",title:"ИИ в работе",qs:[
+   {id:"ai_tasks",type:"multi",title:"Для чего ты используешь ИИ в работе?",options:["Тексты и микрокопи","Ресерч и конкуренты","Варианты решений","Поиск корнер-кейсов","Описание для разработки","Анализ интервью и фидбека","Прототипы и код","Пока не использую"],
+    extra:{id:"ai_tools",label:"Какими инструментами пользуешься?",optional:true,input:"text"}},
+   {id:"ai_block",type:"multi",title:"Что мешает пользоваться ИИ чаще?",options:["Не знаю, как применить к своим задачам","Сам делаю быстрее или лучше","Долго объяснять контекст","Не доверяю результату","Нет доступа к нужным инструментам","Ничего не мешает"]},
+   {id:"ai_delegate",type:"textarea",title:"Какую задачу ты бы с радостью отдал ИИ уже завтра?"}
+ ]},
+ {id:"end",stage:"Блок 5",title:"Напоследок",qs:[
+   {id:"eaters",type:"textarea",title:"Три вещи, которые съедают твоё время и при этом не делают продукт лучше"},
+   {id:"change",type:"textarea",title:"Одна вещь, которую ты бы поменял в нашем процессе"}
+ ]}
+];
+const QS=BLOCKS.flatMap(b=>b.qs);
+const NUMBERED=QS.filter(q=>q.num!==false);
+NUMBERED.forEach((q,i)=>q.n=i+1);
+
+const DRAFT_KEY="designer-survey-draft-v1";
+let answers={split:Object.fromEntries(SPLIT.map(s=>[s[0],0]))};
+try{const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");if(d)answers=Object.assign(answers,d)}catch(e){}
+
+const $=s=>document.querySelector(s);
+const el=(t,a={},...kids)=>{const n=document.createElement(t);for(const[k,v]of Object.entries(a)){if(k==="class")n.className=v;else if(k==="html")n.innerHTML=v;else if(k==="text")n.textContent=v;else n.setAttribute(k,v)}kids.flat().forEach(c=>c!=null&&n.append(c));return n};
+
+function saveDraft(){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(answers))}catch(e){}updateProgress()}
+
+function renderForm(){
+  const f=$("#form");f.innerHTML="";
+  BLOCKS.forEach(b=>{
+    const blk=el("div",{class:"block"});
+    blk.append(el("div",{class:"block-head"},el("span",{class:"stage",text:b.stage}),el("h2",{text:b.title})));
+    if(b.note)blk.append(el("p",{class:"block-note",html:b.note}));
+    b.qs.forEach(q=>blk.append(renderQ(q)));
+    f.append(blk);
+  });
+  updateProgress();
+}
+function renderQ(q){
+  const card=el("div",{class:"q",id:"q-"+q.id});
+  const head=el("div",{class:"qh"},el("span",{class:"qn",text:q.n?String(q.n).padStart(2,"0"):""}),el("div",{class:"qt",id:"t-"+q.id,text:q.title}));
+  if(q.hint)head.append(el("p",{class:"qhint",text:q.hint}));
+  card.append(head);
+  const onChange=()=>{card.classList.remove("invalid");saveDraft()};
+  if(q.type==="text"||q.type==="textarea"){
+    const inp=q.type==="text"?el("input",{type:"text",id:"in-"+q.id,"aria-labelledby":"t-"+q.id,autocomplete:q.id==="name"?"name":"off"}):el("textarea",{id:"in-"+q.id,"aria-labelledby":"t-"+q.id});
+    inp.value=answers[q.id]||"";inp.addEventListener("input",()=>{answers[q.id]=inp.value;onChange()});card.append(inp);
+  }else if(q.type==="single"||q.type==="multi"){
+    const box=el("div",{class:"chips",role:q.type==="single"?"radiogroup":"group","aria-labelledby":"t-"+q.id});
+    q.options.forEach((o,i)=>{
+      const id=`in-${q.id}-${i}`;
+      const inp=el("input",{type:q.type==="single"?"radio":"checkbox",name:q.id,id,value:o});
+      if(q.type==="single")inp.checked=answers[q.id]===o;else inp.checked=(answers[q.id]||[]).includes(o);
+      inp.addEventListener("change",()=>{
+        if(q.type==="single")answers[q.id]=o;
+        else{const set=new Set(answers[q.id]||[]);inp.checked?set.add(o):set.delete(o);answers[q.id]=q.options.filter(x=>set.has(x))}
+        onChange();
+      });
+      box.append(el("label",{class:"chip",for:id},inp,el("span",{text:o})));
+    });
+    card.append(box);
+  }else if(q.type==="pair"){
+    const p=el("div",{class:"pair"});
+    q.fields.forEach(([k,l])=>{
+      const inp=el("input",{type:"number",min:"0",step:"0.5",inputmode:"decimal",id:"in-"+k});
+      inp.value=answers[k]??"";inp.addEventListener("input",()=>{answers[k]=inp.value;onChange()});
+      p.append(el("div",{class:"sub"},el("label",{for:"in-"+k,text:l}),inp));
+    });card.append(p);
+  }else if(q.type==="split"){
+    const wrap=el("div",{class:"split"});
+    const stack=el("div",{class:"stack","aria-hidden":"true"});
+    const total=el("div",{class:"total"},el("span",{text:"Сумма"}),el("span",{class:"v"}));
+    const paint=()=>{
+      stack.innerHTML="";let sum=0;
+      SPLIT.forEach(([k,,c])=>{const v=+answers.split[k]||0;sum+=v;if(v)stack.append(el("i",{style:`width:${v}%;background:var(${c})`}))});
+      total.querySelector(".v").textContent=sum+"%";
+      total.className="total "+(sum===100?"good":sum>0?"bad":"");
+    };
+    SPLIT.forEach(([k,l,c])=>{
+      const out=el("output",{for:"in-split-"+k,text:(answers.split[k]||0)+"%"});
+      const r=el("input",{type:"range",min:"0",max:"100",step:"5",id:"in-split-"+k,"aria-label":l});
+      r.value=answers.split[k]||0;
+      r.addEventListener("input",()=>{answers.split[k]=+r.value;out.textContent=r.value+"%";paint();onChange()});
+      wrap.append(el("div",{class:"srow"},el("label",{class:"lbl",for:"in-split-"+k},el("i",{class:"dot",style:`background:var(${c})`}),el("span",{text:l})),r,out));
+    });
+    wrap.append(stack,total);card.append(wrap);paint();
+  }
+  if(q.extra){
+    const x=q.extra;const inp=x.input==="text"?el("input",{type:"text",id:"in-"+x.id}):el("textarea",{id:"in-"+x.id});
+    inp.value=answers[x.id]||"";inp.addEventListener("input",()=>{answers[x.id]=inp.value;saveDraft()});
+    const lab=el("label",{for:"in-"+x.id},x.label+" ",x.optional?el("span",{class:"opt",text:"необязательно"}):null);
+    card.append(el("div",{class:"sub"},lab,inp));
+  }
+  return card;
+}
+function isAnswered(q){
+  const a=answers;
+  switch(q.type){
+    case"text":case"textarea":return !!(a[q.id]||"").trim();
+    case"single":return !!a[q.id];
+    case"multi":return (a[q.id]||[]).length>0;
+    case"pair":return q.fields.every(([k])=>a[k]!==""&&a[k]!=null&&!isNaN(+a[k]));
+    case"split":return Object.values(a.split).reduce((s,v)=>s+(+v||0),0)===100;
+  }
+}
+function updateProgress(){
+  const done=NUMBERED.filter(isAnswered).length;
+  $("#prog-txt").textContent=`${done} из ${NUMBERED.length}`;
+  $("#prog-bar").style.width=(done/NUMBERED.length*100)+"%";
+}
+
+/* ---------- итог ---------- */
+const status=(t,err)=>{const s=$("#status");s.textContent=t;s.className="status"+(err?" err":"")};
+function plural(n,a,b,c){n=Math.abs(n)%100;const n1=n%10;if(n>10&&n<20)return c;if(n1>1&&n1<5)return b;if(n1===1)return a;return c}
+function asText(){
+  const L=[];const a=answers;
+  L.push("АНКЕТА ДИЗАЙНЕРА");
+  L.push(`Имя: ${a.name||""}`);L.push(`Стрим: ${a.stream||""}`);L.push(`В компании: ${a.tenure||""}`);
+  NUMBERED.forEach(q=>{
+    L.push("");L.push(`${q.n}. ${q.title}`);
+    if(q.type==="pair")L.push(`Оценка: ${a.estimate} дн. · Факт: ${a.actual} дн.`);
+    else if(q.type==="split")SPLIT.forEach(([k,l])=>L.push(`  ${l}: ${a.split[k]||0}%`));
+    else if(q.type==="multi")L.push((a[q.id]||[]).map(x=>"  • "+x).join("\n"));
+    else L.push(a[q.id]||"");
+    if(q.extra&&(a[q.extra.id]||"").trim())L.push(`${q.extra.label} ${a[q.extra.id]}`);
+  });
+  L.push("");L.push("---DATA---");L.push(JSON.stringify(a));
+  return L.join("\n");
+}
+function fileName(){return "anketa_"+((answers.name||"designer").trim().replace(/\s+/g,"_").replace(/[^\wа-яё_-]/gi,""))+".txt"}
+function finish(){
+  const missing=QS.filter(q=>!isAnswered(q));
+  document.querySelectorAll(".q.invalid").forEach(n=>n.classList.remove("invalid"));
+  if(missing.length){
+    missing.forEach(q=>$("#q-"+q.id).classList.add("invalid"));
+    $("#q-"+missing[0].id).scrollIntoView({behavior:"smooth",block:"start"});
+    const sp=missing.find(q=>q.type==="split");
+    status(`Осталось ответить на ${missing.length} ${plural(missing.length,"вопрос","вопроса","вопросов")}`+(sp?". Проверь, что этапы в сумме дают 100%.":"."),true);
+    return;
+  }
+  status("");$("#out").value=asText();
+  $("#view-form").hidden=true;$("#view-done").hidden=false;$("#progress").hidden=true;window.scrollTo({top:0});
+}
+$("#submit").addEventListener("click",finish);
+$("#edit").addEventListener("click",()=>{$("#view-done").hidden=true;$("#view-form").hidden=false;$("#progress").hidden=false});
+$("#dl").addEventListener("click",()=>{
+  const blob=new Blob([$("#out").value],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fileName();document.body.append(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+  $("#done-status").textContent="Файл "+fileName()+" скачан. Отправь его Ивану.";
+});
+$("#copy").addEventListener("click",async()=>{
+  const t=$("#out");
+  try{await navigator.clipboard.writeText(t.value);$("#done-status").textContent="Скопировано. Вставь в сообщение Ивану."}
+  catch(e){t.focus();t.select();try{document.execCommand("copy");$("#done-status").textContent="Скопировано. Вставь в сообщение Ивану."}catch(_){$("#done-status").textContent="Выдели текст ниже и скопируй вручную."}}
+});
+renderForm();
+
+const PASS_HASH="020c355824f43c23a61f7fbeb5fde1acdfdf447747b52c670bfd965be7cd9a52";
+async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+function unlock(){$("#gate").hidden=true;$("#app").hidden=false;$("#top").hidden=false}
+try{if(sessionStorage.getItem("anketa-ok")==="1")unlock()}catch(e){}
+$("#gate-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const v=$("#gate-pass").value.trim();
+  if(await sha(v)===PASS_HASH){try{sessionStorage.setItem("anketa-ok","1")}catch(_){}unlock()}
+  else{$("#gate-err").textContent="Пароль не подошёл. Проверь раскладку и попробуй ещё раз.";}
+});
+$("#gate-pass").focus();
+</script>
+
+</body></html>
