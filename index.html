@@ -376,7 +376,7 @@ function finish(){
 }
 const TG="8531807347:AAE7q7Qyo4wBA5tafISE4ZUvGcdPKnWig2s",CHAT=8099;
 function show(id){["view-form","view-done","view-fail"].forEach(v=>$("#"+v).hidden=v!==id);$("#progress").hidden=id!=="view-form";window.scrollTo({top:0})}
-async function tg(method,body){const r=await fetch(`https://api.telegram.org/bot${TG}/${method}`,{method:"POST",body});const j=await r.json();if(!j.ok)throw new Error(j.description);return j}
+async function tg(method,body){const ac=new AbortController();const t=setTimeout(()=>ac.abort(),10000);const r=await fetch(`https://api.telegram.org/bot${TG}/${method}`,{method:"POST",body,signal:ac.signal}).finally(()=>clearTimeout(t));const j=await r.json();if(!j.ok)throw new Error(j.description);return j}
 async function send(){
   const btn=$("#submit");btn.disabled=true;status("Отправляю…");
   const full=asText(),readable=full.split("\n---DATA---")[0];
